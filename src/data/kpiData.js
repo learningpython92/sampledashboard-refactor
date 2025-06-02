@@ -73,6 +73,16 @@ import {
       icon: Zap,
       color: "from-indigo-500 to-purple-400",
     },
+    {
+      id: 6,
+      name: "Offer to Join Ratio",
+      current: 78,
+      target: 90,
+      buBreakdown: { Hydrocarbons: 72, Jio: 75, Media: 82, Retail: 84 },
+      unit: "%",
+      icon: Eye,
+      color: "from-yellow-500 to-orange-400",
+    }
   ];
   
   export const getRagStatus = (current, target, isHigher = true) => {

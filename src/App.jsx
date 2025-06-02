@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from "react";
-import { motion } from "framer-motion";
-import "./index.css";
-
+import { motion, AnimatePresence } from "framer-motion";
 import { TestComponent } from "./components/TestComponent";
 
-import { BU_LIST } from "./data/kpiData";
+import { BU_LIST, kpiData } from "./data/kpiData";
 import { KPICard } from "./components/KPICard";
 import { InsightCard } from "./components/InsightCard";
 import { SummaryCard } from "./components/SummaryCard";
@@ -13,13 +11,29 @@ import {
   filteredKpis,
   getRagSummary,
 } from "./data/kpiData";
+import KPIChart from "./components/KPIChart";
 
 const App = () => {
   const [selectedBU, setSelectedBU] = useState("All");
+  const [selectedKPIName, setSelectedKPIName] = useState("Offer to Join Ratio");
 
   const summary = useMemo(() => getRagSummary(selectedBU), [selectedBU]);
   const kpis = useMemo(() => filteredKpis(selectedBU), [selectedBU]);
   const insights = useMemo(() => generateExecutiveInsights(kpis), [kpis]);
+
+  const selectedKPI = kpiData.find((kpi) => kpi.name === selectedKPIName);
+
+  const sampleChartData = useMemo(() => {
+    if (!selectedKPI) return [];
+    if (selectedBU === "All") {
+      return Object.entries(selectedKPI.buBreakdown).map(([bu, value]) => ({
+        bu,
+        value,
+      }));
+    }
+    const value = selectedKPI.buBreakdown[selectedBU];
+    return value !== undefined ? [{ bu: selectedBU, value }] : [];
+  }, [selectedKPI, selectedBU]);
 
   return (
     <motion.div
@@ -111,6 +125,43 @@ const App = () => {
             ))}
           </div>
         </div>
+
+        {/* KPI Chart Card with Dropdown */}
+        <motion.div
+          layout
+          className="bg-white rounded-xl shadow-md p-6"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-semibold text-gray-800">
+              {selectedKPIName} by BU
+            </h2>
+            <select
+              value={selectedKPIName}
+              onChange={(e) => setSelectedKPIName(e.target.value)}
+              className="p-2 border border-gray-300 rounded text-sm"
+            >
+              {kpiData.map((kpi) => (
+                <option key={kpi.name} value={kpi.name}>
+                  {kpi.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedKPIName + selectedBU}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <KPIChart data={sampleChartData} />
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
       </div>
     </motion.div>
   );
