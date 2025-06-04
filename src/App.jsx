@@ -8,6 +8,10 @@ import { KPICard } from "./components/cards/KPICard";
 import { InsightCard } from "./components/cards/InsightCard";
 import { SummaryCard } from "./components/cards/SummaryCard";
 import KPIChart from "./components/cards/KPIChart";
+import { KPIInputForm } from "./components/cards/KPIInputForm";
+
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const [selectedBU, setSelectedBU] = useState("All");
@@ -127,26 +131,32 @@ const App = () => {
           )}
 
           {selectedTab === "Insights" && (
-            <div>
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                Executive Insights
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {insights.map((insight, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                  >
-                    <InsightCard insight={insight} index={index} />
-                  </motion.div>
-                ))}
+            <div className="space-y-8">
+              <KPIInputForm />
+
+              <div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                  Executive Insights
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {insights.map((insight, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                    >
+                      <InsightCard insight={insight} index={index} />
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </div>
           )}
         </div>
       </DashboardLayout>
+
+      <ToastContainer position="bottom-right" />
     </motion.div>
   );
 };
